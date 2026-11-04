@@ -27,7 +27,22 @@ const Navbar = () => {
     <header className="fixed top-0 left-0 right-0 z-50 flex justify-center pointer-events-none">
       {/* Animation & Smooth Scaling for Desktop (1440px) & 4K */}
       <style>{`
-        @keyframes navDropIn {
+      @keyframes mobileItemSlide {
+    0% {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-mobile-item {
+    animation: mobileItemSlide 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    opacity: 0;}
+
+       @keyframes navDropIn {
           0% { opacity: 0; transform: translateY(-40px); }
           100% { opacity: 1; transform: translateY(0); }
         }
@@ -131,23 +146,27 @@ const Navbar = () => {
           </svg>
         </button>
 
-        {/* Mobile Menu Dropdown Panel */}
-        {mobileMenuOpen && (
-          <div className="md:hidden absolute top-full left-0 right-0 mt-3 mx-auto w-[92%] rounded-2xl border-2 border-white bg-[#0b3a5f] p-6 shadow-[8px_8px_0_0_#93c5fd] animate-in fade-in slide-in-from-top-4 duration-200">
-            <ol className="flex flex-col gap-4 text-center font-bold">
-              {navLinks.map((link) => (
-                <li key={link.name}>
-                  <a
-                    href={link.href}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="block py-2 text-lg capitalize text-blue-300 hover:text-white border-b border-white/10 last:border-0"
-                  >
-                    {link.name}
-                  </a>
-                </li>
-              ))}
-            </ol>
-          </div>
+       {/* Mobile Menu Dropdown Panel */}
+{mobileMenuOpen && (
+  <div className="md:hidden absolute top-full left-0 right-0 mt-3 mx-auto w-[92%] rounded-2xl border-2 border-white bg-[#0b3a5f] p-6 shadow-[8px_8px_0_0_#93c5fd] animate-in fade-in slide-in-from-top-4 duration-200">
+    <ol className="flex flex-col gap-4 text-center font-bold">
+      {navLinks.map((link, index) => (
+        <li
+          key={link.name}
+          className="animate-mobile-item"
+          style={{ animationDelay: `${0.18 + index * 0.08}s` }}
+        >
+          <a
+            href={link.href}
+            onClick={() => setMobileMenuOpen(false)}
+            className="block py-2 text-lg capitalize text-blue-300 hover:text-white border-b border-white/10 last:border-0 transition-colors"
+          >
+            {link.name}
+          </a>
+        </li>
+      ))}
+    </ol>
+  </div>
         )}
       </nav>
     </header>
