@@ -91,9 +91,28 @@ const Projects = () => {
   const [direction, setDirection] = useState(null); // 'next' | 'prev'
   const [phase, setPhase] = useState('idle'); // 'idle' | 'exit' | 'enter'
   const timers = useRef([]);
+  const sectionRef = useRef(null);
+  const [inView, setInView] = useState(false);
 
   // clear pending timers if the section unmounts mid-animation
   useEffect(() => () => timers.current.forEach(clearTimeout), []);
+
+  // play the entrance animation once, the first time the section scrolls into view
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setInView(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.2 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   const goTo = (index, dir) => {
     if (phase !== 'idle' || index === current) return;
@@ -118,7 +137,11 @@ const Projects = () => {
   const project = PROJECTS[current];
 
   return (
-    <section id="projects" className="projects-section relative overflow-hidden bg-[#0b3a5f] py-24 text-white">
+    <section
+      id="projects"
+      ref={sectionRef}
+      className={`projects-section relative overflow-hidden bg-[#0b3a5f] py-24 text-white ${inView ? 'in-view' : ''}`}
+    >
       {/* same faint grid as hero */}
       <div
         aria-hidden="true"
@@ -151,6 +174,100 @@ const Projects = () => {
         .page-enter-prev { animation: pageIn-prev  0.28s cubic-bezier(0.16,1,0.3,1) forwards; }
         .page-exit-next  { animation: pageOut-next 0.28s cubic-bezier(0.16,1,0.3,1) forwards; }
         .page-exit-prev  { animation: pageOut-prev 0.28s cubic-bezier(0.16,1,0.3,1) forwards; }
+
+        /* ── Entrance: "system boot" ─────────────────────────────────────── */
+        /* everything starts hidden until the section scrolls into view */
+        .projects-section .pj-reveal { opacity: 0; }
+
+        /* 1. eyebrow types itself out with a blinking caret */
+        @keyframes pjType  { from { width: 0; } to { width: calc(13ch + 4px); } }
+        @keyframes pjCaret { 0%, 100% { border-color: currentColor; } 50% { border-color: transparent; } }
+        .pj-type {
+          display: inline-block;
+          width: 0;
+          overflow: hidden;
+          white-space: nowrap;
+          vertical-align: bottom;
+          border-right: 2px solid transparent;
+          padding-right: 2px;
+        }
+        .projects-section.in-view .pj-type {
+          animation:
+            pjType 0.55s steps(13) 0.05s forwards,
+            pjCaret 0.45s step-end 0.05s 4;
+        }
+        .projects-section.in-view .projects-eyebrow { opacity: 1; }
+
+        /* 2. a solid bar sweeps across the title and uncovers it */
+        @keyframes pjWipeBar {
+          0%    { transform: scaleX(0); transform-origin: left; }
+          48%   { transform: scaleX(1); transform-origin: left; }
+          52%   { transform: scaleX(1); transform-origin: right; }
+          100%  { transform: scaleX(0); transform-origin: right; }
+        }
+        @keyframes pjWipeText { 0%, 49% { opacity: 0; } 50%, 100% { opacity: 1; } }
+        .pj-wipe::after {
+          content: '';
+          position: absolute;
+          inset: 0.05em -0.1em;
+          background: #93c5fd;
+          transform: scaleX(0);
+          pointer-events: none;
+        }
+        .pj-wipe-text { opacity: 0; }
+        .projects-section.in-view .pj-wipe-text { animation: pjWipeText 0.7s linear 0.15s forwards; }
+        .projects-section.in-view .pj-wipe::after { animation: pjWipeBar 0.7s cubic-bezier(0.65,0,0.35,1) 0.15s forwards; }
+
+        /* 3. counter flickers on like a cheap display */
+        @keyframes pjFlicker {
+          0% { opacity: 0; } 15% { opacity: 1; } 22% { opacity: 0.15; }
+          38% { opacity: 1; } 45% { opacity: 0.3; } 60%, 100% { opacity: 1; }
+        }
+        .projects-section.in-view .pj-flicker { animation: pjFlicker 0.6s linear 0.55s forwards; }
+
+        /* 4. the card powers on like a CRT: a thin line, then it snaps open */
+        @keyframes pjCrtOn {
+          0%   { opacity: 0; transform: scale(0.5, 0.008); filter: brightness(3); }
+          35%  { opacity: 1; transform: scale(1, 0.008);   filter: brightness(3); }
+          70%  { transform: scale(1, 1.025); filter: brightness(1.4); }
+          85%  { transform: scale(1, 0.99); }
+          100% { opacity: 1; transform: scale(1, 1); filter: brightness(1); }
+        }
+        .projects-section.in-view .pj-crt { animation: pjCrtOn 0.75s cubic-bezier(0.22,1,0.36,1) 0.4s forwards; }
+
+        /* scanline glow sweeps down the card once it's on */
+        @keyframes pjScan {
+          0%   { opacity: 1; background-position: 0 -160px; }
+          90%  { opacity: 1; }
+          100% { opacity: 0; background-position: 0 calc(100% + 160px); }
+        }
+        .pj-crt::after {
+          content: '';
+          position: absolute;
+          inset: 0;
+          border-radius: inherit;
+          pointer-events: none;
+          opacity: 0;
+          background: linear-gradient(to bottom, transparent, rgba(147,197,253,0.28) 50%, transparent) no-repeat;
+          background-size: 100% 160px;
+        }
+        .projects-section.in-view .pj-crt::after { animation: pjScan 0.8s ease-in 1.05s forwards; }
+
+        /* 5. card contents and nav settle in after the screen is on */
+        @keyframes pjSettle {
+          from { opacity: 0; transform: translateY(10px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        .projects-section.in-view .pj-settle { animation: pjSettle 0.45s cubic-bezier(0.16,1,0.3,1) forwards; }
+
+        @media (prefers-reduced-motion: reduce) {
+          .projects-section .pj-reveal,
+          .projects-section .pj-wipe-text { opacity: 1 !important; animation: none !important; }
+          .projects-section .pj-type { width: auto !important; animation: none !important; }
+          .projects-section .pj-wipe::after,
+          .projects-section .pj-crt::after { display: none; }
+          .projects-section .pj-crt { animation: none !important; }
+        }
 
         /* 4K / Ultra-wide Displays — matches hero breakpoint and container width */
         @media (min-width: 2000px) {
@@ -269,18 +386,23 @@ const Projects = () => {
         {/* Section heading */}
         <div className="projects-header mb-14 flex items-end justify-between">
           <div>
-            <p className="projects-eyebrow mb-1 font-mono text-sm text-blue-300">selected work</p>
-            <h2 className="projects-title text-4xl font-black tracking-tight sm:text-5xl">Projects</h2>
+            <p className="projects-eyebrow pj-reveal mb-1 font-mono text-sm text-blue-300">
+              <span className="pj-type">selected work</span>
+            </p>
+            <h2 className="projects-title pj-wipe relative inline-block text-4xl font-black tracking-tight sm:text-5xl">
+              <span className="pj-wipe-text">Projects</span>
+            </h2>
           </div>
           {/* page counter */}
-          <span className="projects-counter font-mono text-lg font-bold text-blue-300">
+          <span className="projects-counter pj-reveal pj-flicker font-mono text-lg font-bold text-blue-300">
             {String(current + 1).padStart(2, '0')}
             <span className="text-white/30"> / </span>
             {String(PROJECTS.length).padStart(2, '0')}
           </span>
         </div>
 
-        {/* Card */}
+        {/* Card (wrapper runs the entrance so it doesn't clash with the page-turn animation) */}
+        <div className="pj-reveal pj-crt relative rounded-2xl">
         <div
           className={`
             projects-card overflow-hidden rounded-2xl border-2 border-white bg-[#0b3a5f]
@@ -290,7 +412,7 @@ const Projects = () => {
           `}
         >
           {/* card top bar */}
-          <div className="projects-bar flex items-center justify-between border-b-2 border-white px-5 py-3">
+          <div style={{ animationDelay: '0.95s' }} className="projects-bar pj-reveal pj-settle flex items-center justify-between border-b-2 border-white px-5 py-3">
             <span className="flex gap-1.5">
               <span className="projects-bar-dot h-3 w-3 rounded-full border border-white" />
               <span className="projects-bar-dot h-3 w-3 rounded-full border border-white" />
@@ -301,7 +423,7 @@ const Projects = () => {
           </div>
 
           {/* card body */}
-          <div className="projects-body grid min-h-[420px] grid-cols-1 lg:grid-cols-2">
+          <div style={{ animationDelay: '1.05s' }} className="projects-body pj-reveal pj-settle grid min-h-[420px] grid-cols-1 lg:grid-cols-2">
 
             {/* left — visual */}
             <div className="projects-visual flex items-center justify-center border-b-2 border-white lg:border-b-0 lg:border-r-2 p-6 min-h-[260px]">
@@ -368,9 +490,10 @@ const Projects = () => {
             </div>
           </div>
         </div>
+        </div>
 
         {/* Navigation */}
-        <div className="projects-nav mt-8 flex items-center justify-between">
+        <div style={{ animationDelay: '1.2s' }} className="projects-nav pj-reveal pj-settle mt-8 flex items-center justify-between">
 
           {/* prev */}
           <button
