@@ -8,6 +8,9 @@ const CONTACT = {
   location: 'najaf, iraq',
 };
 
+// Web3Forms access key (from web3forms.com). It's meant to be public, so it's fine in the code.
+const WEB3FORMS_KEY = '2dcb2f31-0628-4ba0-a245-5193a6c8432f';
+
 const TITLE = "let's talk";
 const CLOSE_MS = 380;
 
@@ -71,26 +74,34 @@ const Contact = ({ open, origin, onClose }) => {
 
   const update = (key) => (e) => setForm({ ...form, [key]: e.target.value });
 
-  // Sends to Netlify Forms (form registered in index.html). Only works on the deployed site.
+  // Sends through Web3Forms, which emails the message to the address tied to WEB3FORMS_KEY.
   const onSubmit = async (e) => {
     e.preventDefault();
     if (status === 'sending' || status === 'sent') return;
     setStatus('sending');
-    const honeypot = e.currentTarget.elements['bot-field']?.value ?? '';
-    const body = new URLSearchParams({ 'form-name': 'contact', 'bot-field': honeypot, ...form });
+    // spam trap: people never see this field, so if it's filled in a bot did it
+    const isBot = Boolean(e.currentTarget.elements.botcheck?.value);
 
     // let the paper plane finish its flight even if the request is quick
     const flight = new Promise((r) => setTimeout(r, 650));
-    let ok = false;
-    try {
-      const res = await fetch('/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: body.toString(),
-      });
-      ok = res.ok;
-    } catch {
-      // network error: ok stays false
+    let ok = isBot; // quietly "succeed" for bots without sending anything
+    if (!isBot) {
+      try {
+        const res = await fetch('https://api.web3forms.com/submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify({
+            access_key: WEB3FORMS_KEY,
+            subject: `Portfolio message from ${form.name}`,
+            from_name: 'Portfolio contact form',
+            ...form,
+          }),
+        });
+        const data = await res.json().catch(() => ({}));
+        ok = res.ok && data.success === true;
+      } catch {
+        // network error: ok stays false
+      }
     }
     await flight;
 
@@ -306,7 +317,7 @@ const Contact = ({ open, origin, onClose }) => {
           {/* form */}
           <form name="contact" onSubmit={onSubmit} className="space-y-4">
             {/* spam trap: hidden from people, bots fill it in and Netlify drops the message */}
-            <input type="text" name="bot-field" tabIndex={-1} autoComplete="off" aria-hidden="true" className="hidden" />
+            <input type="text" name="botcheck" tabIndex={-1} autoComplete="off" aria-hidden="true" className="hidden" />
             <div {...rise(4)} className="cm-rise grid gap-4 sm:grid-cols-2">
               <label className="block">
                 <span className="mb-1.5 block font-mono text-xs text-blue-300">// name</span>

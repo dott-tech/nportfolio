@@ -9,14 +9,6 @@
   </head>
   <body>
     <div id="root"></div>
-
-    <!-- Netlify Forms reads this at deploy time so it knows the React contact form exists. Field names must match contacts.jsx. -->
-    <form name="contact" data-netlify="true" netlify-honeypot="bot-field" hidden>
-      <input type="text" name="name" />
-      <input type="email" name="email" />
-      <textarea name="message"></textarea>
-      <input type="text" name="bot-field" />
-    </form>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
