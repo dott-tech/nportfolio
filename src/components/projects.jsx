@@ -12,7 +12,7 @@ const PROJECTS = [
       'A multi-page coffee shop storefront with a shopping cart, product listings, and a clean responsive layout. Built as a pure HTML/CSS/JS project with static hosting.',
     stack: ['HTML', 'CSS', 'JavaScript'],
     githubUrl: 'https://github.com/dott-tech/coffee-shop',
-    liveUrl: 'https://shop3.netlify.app',
+    liveUrl: 'https://dshop3.netlify.app',
     image: null,
     accent: '#A5D7E8',
   },
