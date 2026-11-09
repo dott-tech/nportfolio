@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { handleAnchorClick } from '../utils/smoothScroll';
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -95,7 +96,7 @@ const Navbar = () => {
       >
         {/* Brand Logo */}
         <h1 className="nav-logo text-white text-xl font-black tracking-tight flex items-center">
-          <a href="#home" className="transition-opacity hover:opacity-90">
+          <a href="#home" onClick={handleAnchorClick} className="transition-opacity hover:opacity-90">
             Ali Mustafa
           </a>
         </h1>
@@ -106,6 +107,7 @@ const Navbar = () => {
             <li key={link.name}>
               <a
                 href={link.href}
+                onClick={handleAnchorClick}
                 className="group relative inline-block py-1 text-blue-300 transition-colors hover:text-white"
               >
                 <span className="nav-link-text capitalize text-base sm:text-lg">{link.name}</span>
@@ -158,7 +160,10 @@ const Navbar = () => {
         >
           <a
             href={link.href}
-            onClick={() => setMobileMenuOpen(false)}
+            onClick={(e) => {
+              setMobileMenuOpen(false);
+              handleAnchorClick(e);
+            }}
             className="block py-2 text-lg capitalize text-blue-300 hover:text-white border-b border-white/10 last:border-0 transition-colors"
           >
             {link.name}

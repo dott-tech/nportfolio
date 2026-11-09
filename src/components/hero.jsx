@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import logo from '../assets/logo.jpg';
+import { handleAnchorClick } from '../utils/smoothScroll';
 
 const NAME = 'ali mustafa';
 const ROLE = 'full-stack web developer';
@@ -220,6 +221,7 @@ const Hero = () => {
           <div className="reveal-item anim-4-btns mt-8 flex flex-wrap justify-center gap-5 lg:justify-start">
             <a
               href="#projects"
+              onClick={handleAnchorClick}
               className="hero-btn group relative rounded-xl border-2 border-white bg-white px-7 py-3.5 font-bold text-[#0b3a5f] shadow-[4px_4px_0_0_#93c5fd] transition-all duration-200 hover:-translate-x-0.5 hover:-translate-y-0.5 hover:bg-transparent hover:text-white hover:border-[#A5D7E8] hover:shadow-[6px_6px_0_0_#93c5fd] active:translate-x-0 active:translate-y-0 active:shadow-none focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-300"
             >
               View my work
@@ -227,6 +229,7 @@ const Hero = () => {
 
             <a
               href="#contact"
+              onClick={handleAnchorClick}
               className="hero-btn group relative rounded-xl border-2 border-[#93c5fd] bg-transparent px-7 py-3.5 font-bold text-white shadow-[4px_4px_0_0_#93c5fd] transition-all duration-200 hover:-translate-x-0.5 hover:-translate-y-0.5 hover:border-white hover:bg-white hover:text-[#0b3a5f] hover:shadow-[6px_6px_0_0_#93c5fd] active:translate-x-0 active:translate-y-0 active:shadow-none focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-300"
             >
               Contact me
