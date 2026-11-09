@@ -14,7 +14,7 @@ const FACTS = [
   { value: '100%', label: 'Responsive builds' },
 ];
 
-const Hero = () => {
+const Hero = ({ onContact }) => {
   const heroRef = useRef(null);
 
   useEffect(() => {
@@ -229,7 +229,7 @@ const Hero = () => {
 
             <a
               href="#contact"
-              onClick={handleAnchorClick}
+              onClick={onContact}
               className="hero-btn group relative rounded-xl border-2 border-[#93c5fd] bg-transparent px-7 py-3.5 font-bold text-white shadow-[4px_4px_0_0_#93c5fd] transition-all duration-200 hover:-translate-x-0.5 hover:-translate-y-0.5 hover:border-white hover:bg-white hover:text-[#0b3a5f] hover:shadow-[6px_6px_0_0_#93c5fd] active:translate-x-0 active:translate-y-0 active:shadow-none focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-300"
             >
               Contact me

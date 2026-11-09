@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { handleAnchorClick } from '../utils/smoothScroll';
 
-const Navbar = () => {
+const Navbar = ({ onContact }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -22,7 +22,11 @@ const Navbar = () => {
     { name: 'home', href: '#home' },
     { name: 'projects', href: '#projects' },
     { name: 'about', href: '#about' },
+    { name: 'contact', href: '#contact' },
   ];
+
+  const onLinkClick = (e, link) =>
+    link.name === 'contact' ? onContact?.(e) : handleAnchorClick(e);
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 flex justify-center pointer-events-none">
@@ -107,7 +111,7 @@ const Navbar = () => {
             <li key={link.name}>
               <a
                 href={link.href}
-                onClick={handleAnchorClick}
+                onClick={(e) => onLinkClick(e, link)}
                 className="group relative inline-block py-1 text-blue-300 transition-colors hover:text-white"
               >
                 <span className="nav-link-text capitalize text-base sm:text-lg">{link.name}</span>
@@ -161,8 +165,8 @@ const Navbar = () => {
           <a
             href={link.href}
             onClick={(e) => {
+              onLinkClick(e, link);
               setMobileMenuOpen(false);
-              handleAnchorClick(e);
             }}
             className="block py-2 text-lg capitalize text-blue-300 hover:text-white border-b border-white/10 last:border-0 transition-colors"
           >
