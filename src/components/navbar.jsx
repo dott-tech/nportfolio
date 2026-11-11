@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { handleAnchorClick } from '../utils/smoothScroll';
 
-const Navbar = ({ onContact }) => {
+const Navbar = ({ onContact, onAbout }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -25,8 +25,11 @@ const Navbar = ({ onContact }) => {
     { name: 'contact', href: '#contact' },
   ];
 
-  const onLinkClick = (e, link) =>
-    link.name === 'contact' ? onContact?.(e) : handleAnchorClick(e);
+  const onLinkClick = (e, link) => {
+    if (link.name === 'contact') return onContact?.(e);
+    if (link.name === 'about') return onAbout?.(e);
+    handleAnchorClick(e);
+  };
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 flex justify-center pointer-events-none">
