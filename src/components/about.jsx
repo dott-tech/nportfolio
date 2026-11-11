@@ -22,7 +22,7 @@ const SKILLS = [
 ];
 
 const TIMELINE = [
-  { when: '2024', what: 'Started out building mockups and small projects like Rock Paper Scissors' },
+  { when: '2024', what: 'Started out building mockups and small projects like Rock Paper Scissors game and half-way UIs' },
   { when: 'Late 2025', what: 'Built my first full project: Coffee Shop' },
   { when: '2026', what: 'Built Structural Hub, a full-stack app for engineering teams' },
   { when: 'Now', what: 'Open to freelance projects and full-time roles', now: true },
