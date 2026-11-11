@@ -1,8 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
+import coffeeDesktop from '../assets/projects/coffee-shop-desktop.webp';
+import coffeePhone from '../assets/projects/coffee-shop-phone.webp';
+import hubDesktop from '../assets/projects/structural-hub-desktop.webp';
+import hubPhone from '../assets/projects/structural-hub-phone.webp';
 
 // ── Project data ──────────────────────────────────────────────────────────────
 // Swap liveUrl / githubUrl / image for each project when ready.
-// image: null → shows the built-in placeholder.
+// image: null → shows the built-in placeholder. phoneImage is optional.
 const PROJECTS = [
   {
     id: '01',
@@ -13,7 +17,8 @@ const PROJECTS = [
     stack: ['HTML', 'CSS', 'JavaScript'],
     githubUrl: 'https://github.com/dott-tech/coffee-shop',
     liveUrl: 'https://dshop3.netlify.app',
-    image: null,
+    image: coffeeDesktop,
+    phoneImage: coffeePhone,
     accent: '#A5D7E8',
   },
   {
@@ -25,7 +30,8 @@ const PROJECTS = [
     stack: ['React', 'Node.js', 'PostgreSQL', 'Vite', 'AWS S3'],
     githubUrl: 'https://github.com/dott-tech/project-delta',
     liveUrl: 'https://structural-hub.netlify.app',
-    image: null,
+    image: hubDesktop,
+    phoneImage: hubPhone,
     accent: '#93c5fd',
   },
   {
@@ -428,12 +434,22 @@ const Projects = () => {
             {/* left — visual */}
             <div className="projects-visual flex items-center justify-center border-b-2 border-white lg:border-b-0 lg:border-r-2 p-6 min-h-[260px]">
               {project.image ? (
-                <img
-                  src={project.image}
-                  alt={project.name}
-                  className="h-full w-full rounded-lg border-2 object-cover"
-                  style={{ borderColor: project.accent }}
-                />
+                // desktop screenshot, with the phone view layered over its corner
+                <div className="group relative w-full pb-4 pr-2">
+                  <img
+                    src={project.image}
+                    alt={`${project.name} on desktop`}
+                    className="aspect-[16/10] w-full rounded-lg border-2 object-cover object-top shadow-[6px_6px_0_0_rgba(147,197,253,0.35)] transition-transform duration-300 group-hover:scale-[1.015]"
+                    style={{ borderColor: project.accent }}
+                  />
+                  {project.phoneImage && (
+                    <img
+                      src={project.phoneImage}
+                      alt={`${project.name} on a phone`}
+                      className="absolute bottom-0 right-0 w-[24%] rounded-xl border-2 border-white object-cover object-top shadow-[4px_4px_0_0_#93c5fd] transition-transform duration-300 group-hover:-translate-y-2 group-hover:rotate-2"
+                    />
+                  )}
+                </div>
               ) : (
                 <ProjectPlaceholder project={project} />
               )}
