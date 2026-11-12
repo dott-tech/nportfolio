@@ -1,4 +1,11 @@
 @import "tailwindcss";
+/* paint the page itself blue too, so nothing white shows through when the
+   mobile address bar hides mid-scroll or the page bounces at the edges */
+html,
+body {
+    background-color: #0b3a5f;
+}
+
 #root{
     background-color: #0b3a5f;
 }
